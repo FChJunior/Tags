@@ -1,0 +1,101 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+//Aloca todos os componentes necessários para o game object Player.
+[RequireComponent(typeof(CharacterController),
+                  typeof(PlayerCollision),
+                  typeof(PlayerInteractions))]
+public class PlayerControler : MonoBehaviour
+{
+
+    #region Atributos de Movimento
+    [Header("Atributos Player - Atributos de Movimento")]
+    [SerializeField][Range(1, 20)][Tooltip("Define a velocidade do player")] float speed;
+    #endregion
+    #region Atributos de Gravidade
+    [Header("Atributos Player - Atributos de Gravidade")]
+    [SerializeField][Range(1, 10)] float maxJump;
+    [SerializeField][Range(0.01f, 1)] float timeJump;
+    [SerializeField] float jumpForce;
+    [SerializeField] float doubleJumpForce;
+    [SerializeField] float gravity;
+    [SerializeField] bool doubleJump;
+    [SerializeField] bool enabledDoubleJump;
+    #endregion
+    #region Controle de Movimento
+    [Header("Atributos Player - Controle de Movimento")]
+    [SerializeField] Vector3 xMoving;
+    [SerializeField] Vector3 yMoving;
+    [SerializeField] Vector3 zMoving;
+    [SerializeField] Vector3 moving;
+    #endregion
+    #region Componentes
+    [Header("Componentes")]
+    [SerializeField] CharacterController player;
+    [SerializeField] Transform cam;
+    [SerializeField] Transform head;
+    [SerializeField] float xMouse;
+    [SerializeField] float yMouse;
+    #endregion 
+    void Start()
+    {
+        player = GetComponent<CharacterController>();
+    }
+    void Update()
+    {
+        Move();
+        Jump();
+        Cam();
+        CalculateGravity();
+    }
+    private void LateUpdate()
+    {
+        cam.position = head.position;
+       
+    }
+    void Cam()
+    {
+        xMouse += Input.GetAxis("Mouse X");
+        yMouse -= Input.GetAxis("Mouse Y");
+
+        cam.eulerAngles = new Vector3(yMouse, xMouse, 0);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+    void CalculateGravity()
+    {
+        gravity = (-2 * maxJump) / (float)Math.Pow(timeJump, 2);
+        jumpForce = (2 * maxJump) / timeJump;
+        doubleJumpForce = 1.5f * jumpForce;
+    }
+    void Move()
+    {
+        yMoving += gravity * Time.deltaTime * Vector3.up;
+        xMoving = Input.GetAxis("Horizontal") * speed * transform.right;
+        zMoving = Input.GetAxis("Vertical") * speed * transform.forward;
+        moving = xMoving + yMoving + zMoving;
+        transform.eulerAngles = new Vector3(0, cam.eulerAngles.y, 0);
+        player.Move(moving * Time.deltaTime);
+    }
+    void Jump()
+    {
+        if (player.isGrounded || yMoving.y > 0 && (player.collisionFlags & CollisionFlags.Above) != 0)
+        {
+            yMoving = Vector3.down;
+            doubleJump = false;
+        }
+        if (InputsControler.Jump() && doubleJump && enabledDoubleJump)
+        {
+            yMoving = Vector3.up * doubleJumpForce;
+            doubleJump = false;
+        }
+        if (InputsControler.Jump() && player.isGrounded)
+        {
+            yMoving = Vector3.up * jumpForce;
+            doubleJump = true;
+        }
+    }
+
+}
