@@ -1,0 +1,50 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace POO_SM
+{
+    internal class Triangulo
+    {
+
+        public void EhTrinangulos(int x, int y, int z)
+        {
+            if (x + y > z && x + z > y && z + y > x)
+            {
+                if (x == y && y == z)
+                {
+                    Equilatero();
+                }
+                else if (x == y || x == z || z == y)
+                {
+                    Escaleno();
+                }
+                else
+                {
+                    Isosceles();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Não é um triangulo.");
+            }
+        }
+
+        private void Isosceles()
+        {
+            Console.WriteLine("É um trinagulo isósceles.");
+        }
+        
+        private void Equilatero()
+        {
+            Console.WriteLine("É um triangulo equilatero.");
+        }
+
+        private void Escaleno()
+        {
+            Console.WriteLine("É um trinagulo escaleno");
+        }
+    }
+}
