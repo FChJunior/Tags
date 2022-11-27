@@ -4,9 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 //Aloca todos os componentes necessários para o game object Player.
-[RequireComponent(typeof(CharacterController),
-                  typeof(PlayerCollision),
-                  typeof(PlayerInteractions))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerControler : MonoBehaviour
 {
 
@@ -86,12 +84,12 @@ public class PlayerControler : MonoBehaviour
             yMoving = Vector3.down;
             doubleJump = false;
         }
-        if (InputsControler.Jump() && doubleJump && enabledDoubleJump)
+        if (Inputs.GetButtonDown("Jump") && doubleJump && enabledDoubleJump)
         {
             yMoving = Vector3.up * doubleJumpForce;
             doubleJump = false;
         }
-        if (InputsControler.Jump() && player.isGrounded)
+        if (Inputs.GetButtonDown("Jump") && player.isGrounded)
         {
             yMoving = Vector3.up * jumpForce;
             doubleJump = true;
