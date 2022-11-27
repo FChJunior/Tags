@@ -1,0 +1,46 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CamControler : MonoBehaviour
+{
+    #region Game Objects de Interação
+    [Header("Game Objects de Interação")]
+    [SerializeField] GameObject headPlayer;
+    [SerializeField] GameObject player;
+    #endregion
+    #region Controle do Mouse
+    [Header("Controle do Mouse")]
+    [SerializeField] float mouseX;
+    [SerializeField] float mouseY;
+    [SerializeField] [Range(0.1f, 5)]float sensibility;
+    #endregion
+    private void Awake()
+    {
+        // ===Lembre de passar os nomes na Hierarchy igual ao nome passado no parâmetro===\\.
+        //Crie a Head filha do Player e posicione-a como se fosse a cabeça mesmo;
+        headPlayer = GameObject.Find("Head");
+        //Esse obejto irá pegar todo o game obect do player, certifique-se o nome do obejto é "Player"
+        player = GameObject.Find("Player");
+        
+    }
+    void Update()
+    {
+        ControlCam();
+    }
+    void ControlCam()
+    {
+        mouseX += Inputs.GetAxesRaw("Mouse X") * sensibility;
+        mouseY -= Inputs.GetAxesRaw("Mouse Y") * sensibility;
+        transform.eulerAngles = new Vector3(mouseY, mouseX, 0);
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+    void LateUpdate()
+    {
+        transform.position = headPlayer.transform.position;
+        player.transform.eulerAngles = new Vector3(0,transform.eulerAngles.y,0);
+
+    }
+}
